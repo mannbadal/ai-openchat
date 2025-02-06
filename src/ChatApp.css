@@ -152,7 +152,8 @@ body {
   font-size: 1rem;
 }
 
-.message-content ol {
+.message-content ol,
+.message-content ul {
   list-style-position: inside;
   padding-left: 0;
 }
