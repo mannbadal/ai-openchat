@@ -1,0 +1,108 @@
+.auth-container {
+  margin: 1rem;
+  padding: 1.5rem;
+  background-color: #2d2d2d;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #f8f8f8;
+  max-width: 400px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.auth-container h2 {
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.75rem;
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-container input {
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: none;
+  border-radius: 4px;
+}
+
+.auth-container button {
+  padding: 0.75rem;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  background-color: #10a37f; /* updated */
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.signin-button {
+  font: inherit;
+}
+
+.auth-container button:hover {
+  background-color: #0e8a69; /* updated */
+}
+
+.auth-links {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.auth-links a {
+  color: #10a37f; /* updated */
+  text-decoration: none;
+  margin: 0 0.5rem;
+}
+
+.auth-links a:hover {
+  color: #0e8a69; /* updated */
+  text-decoration: underline;
+}
+
+@media only screen and (max-width: 480px) {
+  .auth-container {
+    padding: 1rem;
+  }
+}
+
+/* New styles for provider buttons */
+.provider-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.provider-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #10a37f; /* updated */
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 1.8rem; /* increased text size */
+}
+
+.provider-button:hover {
+  background-color: #0e8a69; /* updated */
+}
+
+.provider-icon {
+  height: 30px;
+  width: 30px;
+}
+
+.password-requirements {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  padding-left: 20px;
+}
