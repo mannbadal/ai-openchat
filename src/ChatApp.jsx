@@ -90,7 +90,7 @@ const generateAssistantReply = async (conversation, onDelta) => {
       Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o-mini",
       messages: conversation,
       stream: true,
     }),
@@ -191,7 +191,7 @@ const ChatApp = () => {
               Authorization: `Bearer ${import.meta.env.VITE_DEEPSEEK_API_KEY}`,
             },
             body: JSON.stringify({
-              model: "gpt-3.5-turbo",
+              model: "gpt-4o-mini",
               messages: [
                 {
                   role: "system",
