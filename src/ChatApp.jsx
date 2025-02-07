@@ -133,19 +133,18 @@ const generateAssistantReply = async (conversation, onDelta, chatId = null) => {
               JSON.parse(dataStr).choices[0].delta?.content || "";
             assistantContent += parsedDelta;
             onDelta(assistantContent);
-            // If chatId is provided, update updatedAt in Firestore
-            if (chatId) {
-              updateDoc(
-                doc(firestore, "users", auth.currentUser.uid, "chats", chatId),
-                { updatedAt: new Date() }
-              ).catch((err) => console.error("Error updating updatedAt:", err));
-            }
           } catch (error) {
             console.error("Error processing chunk:", error);
           }
         }
       }
     }
+  }
+  // Single update after the stream completes
+  if (chatId) {
+    updateDoc(doc(firestore, "users", auth.currentUser.uid, "chats", chatId), {
+      updatedAt: new Date(),
+    }).catch((err) => console.error("Error updating updatedAt:", err));
   }
   return assistantContent;
 };
