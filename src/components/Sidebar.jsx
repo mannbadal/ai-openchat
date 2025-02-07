@@ -12,16 +12,17 @@ import {
 import PropTypes from "prop-types";
 import { signOut } from "firebase/auth";
 
-const Sidebar = ({ onSelect, className }) => {
-  // new prop
+const Sidebar = ({ onSelect, selectedChatId, className }) => {
   const [chats, setChats] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
+    // Changed: use "updatedAt" for ordering
     const q = query(
       collection(firestore, "users", uid, "chats"),
-      orderBy("createdAt", "desc")
+      orderBy("updatedAt", "desc")
     );
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const fetchedChats = snapshot.docs.map((doc) => ({
@@ -32,6 +33,10 @@ const Sidebar = ({ onSelect, className }) => {
     });
     return () => unsubscribe();
   }, []);
+
+  const filteredChats = chats.filter((chat) =>
+    chat.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const handleDeleteChat = async (chatId) => {
     if (!auth.currentUser) return;
@@ -47,6 +52,11 @@ const Sidebar = ({ onSelect, className }) => {
 
     // Then delete the chat document
     await deleteDoc(doc(firestore, "users", uid, "chats", chatId));
+
+    // If the currently selected chat was deleted, display new conversation window.
+    if (chatId === selectedChatId) {
+      onSelect(null);
+    }
   };
 
   const handleLogout = async () => {
@@ -61,9 +71,23 @@ const Sidebar = ({ onSelect, className }) => {
   return (
     <div className={`sidebar ${className || ""}`}>
       <h2>Past Conversations</h2>
+      {/* Styled search bar */}
+      <input
+        type="text"
+        placeholder="Search conversations..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{
+          width: "100%",
+          marginBottom: "1rem",
+          padding: "0.5rem",
+          borderRadius: "4px",
+          border: "1px solid #ccc",
+        }}
+      />
       <ul>
-        {chats.map((chat) => (
-          <li key={chat.id}>
+        {filteredChats.map((chat) => (
+          <li key={chat.id} className="chat-item">
             <span onClick={() => onSelect && onSelect(chat.id)}>
               {chat.title}
             </span>
@@ -82,8 +106,10 @@ const Sidebar = ({ onSelect, className }) => {
     </div>
   );
 };
+
 Sidebar.propTypes = {
   onSelect: PropTypes.func.isRequired,
+  selectedChatId: PropTypes.string, // new prop for tracking current chat
   className: PropTypes.string,
 };
 

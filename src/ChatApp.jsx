@@ -2,8 +2,6 @@
 // src/ChatApp.js
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types"; // added for prop validation
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
 import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import Sidebar from "./components/Sidebar"; // updated
@@ -14,7 +12,11 @@ import {
   getDocs,
   query,
   orderBy,
+  limit,
+  updateDoc,
+  doc,
 } from "firebase/firestore"; // new
+import Markdown from "markdown-to-jsx";
 
 /* Add helper component for code blocks with copy icon */
 const CodeBlock = ({ inline, className, children, ...props }) => {
@@ -60,14 +62,24 @@ const ChatMessage = ({ message }) => {
   return (
     <div className={`message ${message.role}`}>
       <div className="message-content">
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            code: CodeBlock,
+        <Markdown
+          options={{
+            overrides: {
+              li: {
+                component: ({ children, ...props }) => (
+                  <li style={{ marginLeft: "1rem" }} {...props}>
+                    {children}
+                  </li>
+                ),
+              },
+              code: {
+                component: CodeBlock,
+              },
+            },
           }}
         >
           {message.content}
-        </ReactMarkdown>
+        </Markdown>
       </div>
     </div>
   );
@@ -80,9 +92,8 @@ ChatMessage.propTypes = {
   }).isRequired,
 };
 
-// NEW: Extract streaming logic into a helper
-// Modified generateAssistantReply to stream deltas via onDelta callback
-const generateAssistantReply = async (conversation, onDelta) => {
+// Change the signature to accept an optional chatId
+const generateAssistantReply = async (conversation, onDelta, chatId = null) => {
   const response = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -112,18 +123,25 @@ const generateAssistantReply = async (conversation, onDelta) => {
         if (line.startsWith("data: ")) {
           const dataStr = line.replace("data: ", "").trim();
           if (dataStr === "[DONE]") {
+            // End of stream, exit loop
             done = true;
             break;
           }
           try {
-            const dataObj = JSON.parse(dataStr);
-            const delta = dataObj.choices[0].delta.content;
-            if (delta) {
-              assistantContent += delta;
-              if (onDelta) onDelta(assistantContent);
+            // Assume the delta is parsed here (this logic remains unchanged)
+            const parsedDelta =
+              JSON.parse(dataStr).choices[0].delta?.content || "";
+            assistantContent += parsedDelta;
+            onDelta(assistantContent);
+            // If chatId is provided, update updatedAt in Firestore
+            if (chatId) {
+              updateDoc(
+                doc(firestore, "users", auth.currentUser.uid, "chats", chatId),
+                { updatedAt: new Date() }
+              ).catch((err) => console.error("Error updating updatedAt:", err));
             }
           } catch (error) {
-            console.error("Error parsing stream data:", error);
+            console.error("Error processing chunk:", error);
           }
         }
       }
@@ -139,10 +157,31 @@ const ChatApp = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(null); // new
   const messageEndRef = useRef(null);
+  const initialLoad = useRef(true); // new flag
 
   useEffect(() => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // NEW: On mount, load last conversation if exists (only once)
+  useEffect(() => {
+    if (!auth.currentUser || !initialLoad.current) return;
+    initialLoad.current = false;
+    const loadLastConversation = async () => {
+      const uid = auth.currentUser.uid;
+      const q = query(
+        collection(firestore, "users", uid, "chats"),
+        orderBy("createdAt", "desc"),
+        limit(1)
+      );
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const lastChat = querySnapshot.docs[0];
+        loadConversation(lastChat.id);
+      }
+    };
+    loadLastConversation();
+  }, []);
 
   // New: load a conversation from Firestore by chatId
   const loadConversation = async (chatId) => {
@@ -179,7 +218,11 @@ const ChatApp = () => {
   const storeConversation = async (finalMessages) => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
-    const conversationText = finalMessages.map((m) => m.content).join("\n");
+    const conversationText = finalMessages
+      .map((m) => m.content)
+      .join("\n")
+      .replace(/^"|"$/g, ""); // Remove extra wrapping quotes if present
+
     const title = await (async () => {
       try {
         const response = await fetch(
@@ -195,7 +238,8 @@ const ChatApp = () => {
               messages: [
                 {
                   role: "system",
-                  content: "Give a short title for this conversation.",
+                  content:
+                    "Give a short title for this conversation, only the title without any other text.",
                 },
                 { role: "user", content: conversationText },
               ],
@@ -203,7 +247,7 @@ const ChatApp = () => {
           }
         );
         const data = await response.json();
-        return data.choices[0].message.content.trim();
+        return data.choices[0].message.content.trim().replace(/^"|"$/g, "");
       } catch (error) {
         console.error("Error generating title:", error);
         return "Untitled Conversation";
@@ -215,6 +259,7 @@ const ChatApp = () => {
         {
           title,
           createdAt: new Date(),
+          updatedAt: new Date(),
         }
       );
       // Store each message in the "messages" subcollection.
@@ -257,7 +302,8 @@ const ChatApp = () => {
             updated[updated.length - 1].content = updatedContent;
             return updated;
           });
-        }
+        },
+        currentChatId // Pass currentChatId to update updatedAt
       );
       setIsStreaming(false);
       const finalMessages = [
@@ -305,7 +351,8 @@ const ChatApp = () => {
             updated[updated.length - 1].content = updatedContent;
             return updated;
           });
-        }
+        },
+        currentChatId // Pass currentChatId to update updatedAt
       );
       setIsStreaming(false);
       const updatedMessages = [
@@ -346,11 +393,11 @@ const ChatApp = () => {
           className="sidebar-toggle"
           onClick={() => setShowSidebar(!showSidebar)}
         >
-          ☰
+          <i className="fa fa-bars"></i>
         </button>
-        <h1>OpenChat</h1>
+        <h1>OpenChat 💬</h1>
         <button onClick={startNewConversation} className="new-convo-btn">
-          New Conversation
+          <i className="fa-regular fa-pen-to-square new-convo-icon"></i>
         </button>
       </div>
       <div className="chat-body">
