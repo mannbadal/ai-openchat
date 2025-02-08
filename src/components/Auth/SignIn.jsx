@@ -7,7 +7,7 @@ import {
   GithubAuthProvider,
 } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
-import "./Auth.css"; // added styling
+import "./Auth.css";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -63,7 +63,6 @@ const SignIn = () => {
           Sign In
         </button>
       </form>
-      {/* Provider login buttons with Font Awesome icons */}
       <div className="provider-buttons">
         <button
           onClick={() => signInWithProvider("google")}

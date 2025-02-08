@@ -67,6 +67,40 @@ npm install
 npm run dev
 ```
 
+## Firebase Setup
+
+1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com)
+2. Enable Authentication and Firestore in your project
+3. Get your Firebase configuration from Project Settings > General > Your Apps
+4. Set up Firestore Security Rules in Firebase Console:
+
+```javascript
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthenticatedUser(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+    match /users/{userId} {
+      allow read, write: if isAuthenticatedUser(userId);
+      match /chats/{chatId} {
+        allow read, write: if isAuthenticatedUser(userId);
+        match /messages/{messageId} {
+          allow read, write: if isAuthenticatedUser(userId);
+        }
+      }
+    }
+  }
+}
+```
+
+These security rules ensure that:
+
+- Users can only access their own data
+- Each user has their own isolated chat space
+- Messages are protected and private to the user
+
 ## Building for Production
 
 ```bash

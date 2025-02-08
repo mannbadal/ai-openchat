@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import PropTypes from "prop-types"; // for prop validation
-import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
-import { docco } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import Sidebar from "./components/Sidebar";
+import ChatMessage from "./components/ChatMessage";
 import { firestore, auth } from "./firebase";
 import {
   collection,
@@ -14,91 +12,13 @@ import {
   updateDoc,
   doc,
 } from "firebase/firestore";
-import Markdown from "markdown-to-jsx";
-
-// Import the new OpenAI SDK (v4)
 import OpenAI from "openai";
 
-// Initialize the client with your API key
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
-/* Helper component for code blocks with copy icon */
-/* eslint-disable react/prop-types */
-const CodeBlock = ({ inline, className, children, ...props }) => {
-  const codeRef = useRef(null);
-  const handleCopy = () => {
-    const codeText = codeRef.current.innerText;
-    navigator.clipboard.writeText(codeText);
-  };
-
-  const match = /language-(\w+)/.exec(className || "");
-  const language = match ? match[1] : "text";
-
-  if (!inline) {
-    return (
-      <div className="code-block-container">
-        <button className="copy-btn" onClick={handleCopy}>
-          <i className="fa fa-copy"></i>
-        </button>
-        <SyntaxHighlighter
-          language={language}
-          style={docco}
-          PreTag="div"
-          {...props}
-          ref={codeRef}
-        >
-          {String(children).replace(/\n$/, "")}
-        </SyntaxHighlighter>
-      </div>
-    );
-  }
-
-  return (
-    <code ref={codeRef} className={className} {...props}>
-      {children}
-    </code>
-  );
-};
-
-/* eslint-disable react/prop-types */
-const ChatMessage = ({ message }) => {
-  return (
-    <div className={`message ${message.role}`}>
-      <div className="message-content">
-        <Markdown
-          options={{
-            overrides: {
-              li: {
-                component: ({ children, ...props }) => (
-                  <li style={{ marginLeft: "1rem" }} {...props}>
-                    {children}
-                  </li>
-                ),
-              },
-              code: {
-                component: CodeBlock,
-              },
-            },
-          }}
-        >
-          {message.content}
-        </Markdown>
-      </div>
-    </div>
-  );
-};
-
-ChatMessage.propTypes = {
-  message: PropTypes.shape({
-    role: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-  }).isRequired,
-};
-
-// Generate assistant reply using streaming via the new SDK
 const generateAssistantReply = async (
   conversation,
   onDelta,
@@ -106,19 +26,17 @@ const generateAssistantReply = async (
   model = "gpt-4o-mini"
 ) => {
   const response = await openai.chat.completions.create({
-    model, // use provided model
+    model,
     messages: conversation,
     stream: true,
   });
 
   let assistantContent = "";
   try {
-    // Iterate directly over the async iterable returned by the streaming endpoint
     for await (const chunk of response) {
       const parsedDelta = chunk.choices[0].delta?.content || "";
       assistantContent += parsedDelta;
       onDelta(assistantContent);
-      // Update Firestore if chatId is provided
       if (chatId) {
         updateDoc(
           doc(firestore, "users", auth.currentUser.uid, "chats", chatId),
@@ -138,7 +56,7 @@ const ChatApp = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(null);
-  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini"); // new state for model
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini");
   const messageEndRef = useRef(null);
   const initialLoad = useRef(true);
 
@@ -146,7 +64,6 @@ const ChatApp = () => {
     messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Load the last conversation on mount (if it exists)
   useEffect(() => {
     if (!auth.currentUser || !initialLoad.current) return;
     initialLoad.current = false;
@@ -166,7 +83,6 @@ const ChatApp = () => {
     loadLastConversation();
   }, []);
 
-  // Load a conversation by chatId from Firestore
   const loadConversation = async (chatId) => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
@@ -183,7 +99,6 @@ const ChatApp = () => {
     }
   };
 
-  // Store a single message in an existing conversation
   const storeMessage = async (chatId, msg) => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
@@ -196,7 +111,6 @@ const ChatApp = () => {
     );
   };
 
-  // Store the conversation and generate a title using the new OpenAI SDK
   const storeConversation = async (finalMessages, model = "gpt-4o-mini") => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
@@ -208,7 +122,7 @@ const ChatApp = () => {
     const title = await (async () => {
       try {
         const response = await openai.chat.completions.create({
-          model, // use provided model for title generation
+          model,
           messages: [
             {
               role: "system",
@@ -233,7 +147,6 @@ const ChatApp = () => {
           updatedAt: new Date(),
         }
       );
-      // Store each message in the "messages" subcollection.
       for (const msg of finalMessages) {
         await addDoc(
           collection(firestore, "users", uid, "chats", chatDoc.id, "messages"),
@@ -259,11 +172,9 @@ const ChatApp = () => {
     const newMessages = [...messages, userMessage];
     setMessages(newMessages);
     setInput("");
-    // Append a placeholder for the assistant’s reply
     setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
     setIsStreaming(true);
     try {
-      // Update the assistant’s message as new content arrives
       const assistantContent = await generateAssistantReply(
         newMessages,
         (updatedContent) => {
@@ -274,7 +185,7 @@ const ChatApp = () => {
           });
         },
         currentChatId,
-        selectedModel // pass selected model here
+        selectedModel
       );
       setIsStreaming(false);
       const finalMessages = [
@@ -283,7 +194,7 @@ const ChatApp = () => {
       ];
       const newMsgsToStore = finalMessages.slice(prevCount);
       if (currentChatId === null) {
-        const newChatId = await storeConversation(finalMessages, selectedModel); // pass model
+        const newChatId = await storeConversation(finalMessages, selectedModel);
         setCurrentChatId(newChatId);
       } else {
         for (const msg of newMsgsToStore) {
@@ -303,7 +214,6 @@ const ChatApp = () => {
     }
   };
 
-  // Retry the last assistant reply
   const handleRegenerate = async () => {
     if (messages.length < 2) return;
     const conversation = messages.slice(0, -1);
@@ -321,7 +231,7 @@ const ChatApp = () => {
           });
         },
         currentChatId,
-        selectedModel // pass selected model here as well
+        selectedModel
       );
       setIsStreaming(false);
       const updatedMessages = [
@@ -341,7 +251,6 @@ const ChatApp = () => {
     }
   };
 
-  // Start a new conversation
   const startNewConversation = () => {
     setMessages([]);
     setCurrentChatId(null);
@@ -364,7 +273,6 @@ const ChatApp = () => {
         <h1>
           <span className="header-title">OpenChat</span> 💬
         </h1>
-        {/* New placement for model selection dropdown */}
         <select
           value={selectedModel}
           onChange={(e) => setSelectedModel(e.target.value)}

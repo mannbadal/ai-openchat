@@ -2,7 +2,7 @@ import { useState } from "react";
 import { auth } from "../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate, Link } from "react-router-dom";
-import "./Auth.css"; // added styling
+import "./Auth.css";
 
 const SignUp = () => {
   const [email, setEmail] = useState("");
@@ -12,7 +12,6 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   const validatePassword = (pwd) => {
-    // At least 8 characters, one uppercase, one lowercase, one digit, one special char
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_\-+=])[A-Za-z\d@$!%*?&#^()_\-+=]{8,}$/;
     return regex.test(pwd);

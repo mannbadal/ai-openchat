@@ -1,42 +1,454 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* src/ChatApp.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  background-color: #f7f7f7;
+}
+
+.chat-app {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px; /* changed from 800px to 1200px for wider display */
+  margin: 0 auto; /* removed vertical margin to avoid extra height */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff; /* revert background to white */
+  color: #000; /* revert text color to black */
+  height: 100vh; /* Ensure container takes full viewport height */
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #343541;
+  color: #fff;
+  border-bottom: 1px solid #444;
+}
+
+.chat-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.clear-history-btn {
+  background: #ff4d4f;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.clear-history-btn:hover {
+  background: #ff7875;
+}
+
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.chat-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #343541; /* updated for app theme */
+  padding: 1rem;
+  overflow-y: auto;
+  border-right: 1px solid #444;
+  color: #f8f8f8;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  position: relative; /* ensure absolute children position correctly */
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-@keyframes logo-spin {
-  from {
+.sidebar li {
+  padding: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background-color: #424242;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sidebar li:hover {
+  background-color: #10a37f; /* updated */
+}
+
+.user-info {
+  position: static;
+  margin-top: auto;
+  background-color: #343541;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.logout-btn {
+  font: inherit;
+  background-color: #343541;
+  padding: 0;
+  margin: 0;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+}
+.logout-btn:hover {
+  background-color: #0e8a69;
+}
+
+.new-convo-btn {
+  font: inherit;
+  background-color: #343541;
+  padding: 0;
+  margin: 0;
+  width: 40px;
+  height: 40px;
+}
+
+.new-convo-icon {
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.chat-container {
+  flex: 1; /* Make chat container grow to fill space */
+  padding: 20px;
+  overflow-y: auto;
+  position: relative; /* added to contain absolute children */
+}
+
+.message {
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.assistant {
+  justify-content: flex-start;
+}
+
+.message-content {
+  max-width: 100%;
+  padding: 10px 15px;
+  border-radius: 8px;
+  background-color: #eaeaea;
+  color: #000;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 1rem;
+}
+
+.message-content ol,
+.message-content ul {
+  list-style-position: inside !important;
+  padding-left: 0;
+}
+
+.message-content li p {
+  display: inline;
+  margin: 0;
+}
+
+.message-content ol,
+.message-content ul,
+.message-content li,
+.message-content p {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.message.user .message-content {
+  background-color: #0084ff;
+  color: #fff;
+}
+
+.chat-input-area {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  align-items: flex-start; /* changed from center to allow height increase */
+  flex-shrink: 0; /* prevent input area from shrinking */
+  position: relative; /* added for absolute positioning of dropdown */
+}
+
+/* Update textarea container to align its child (textarea) at the bottom */
+.textarea-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.textarea-container textarea {
+  width: 100%;
+  padding: 10px;
+  padding-bottom: 40px; /* extra bottom space to prevent overlap with dropdown */
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  resize: vertical; /* allow vertical resizing */
+  overflow-y: auto; /* if text exceeds max height, show scrollbar */
+  max-height: calc(
+    1.5em * 10
+  ); /* display up to 10 lines (assuming ~1.5em per line) */
+}
+
+/* Position the model dropdown at bottom right within the chat-container */
+.chat-header select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+.chat-input-area textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 1rem;
+  outline: none;
+}
+
+.chat-input-area button {
+  margin-left: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #343541;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.chat-input-area button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.react-syntax-highlighter {
+  background-color: #f0f0f0 !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  padding: 0.5rem;
+}
+
+button {
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  height: 3rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #10a37f; /* updated */
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+button:hover {
+  background-color: #0e8a69; /* updated */
+}
+
+.delete-chat-btn {
+  padding: 0px;
+  background-color: transparent;
+  color: #f8f8f8;
+  border: none;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  height: 0;
+}
+.delete-chat-btn:hover {
+  color: #ff4d4f;
+}
+
+/* Mobile-first adjustments */
+@media only screen and (max-width: 600px) {
+  .chat-app {
+    font-size: 0.9rem;
+  }
+  .chat-header {
+    padding: 0.75rem;
+    margin-top: -1px;
+    margin-left: -1px;
+    margin-right: -1px;
+  }
+  .header-title {
+    display: none;
+  }
+  .chat-input-area {
+    padding: 0.75rem;
+  }
+  .chat-input-area textarea {
+    font-size: 1rem;
+  }
+  .chat-body {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+}
+
+/* Desktop view adjustments */
+@media only screen and (min-width: 800px) {
+  .chat-body {
+    flex-direction: row;
+    /* Sidebar always visible on left using full vertical space */
+  }
+  .sidebar {
+    width: 300px; /* increased for desktop */
+    position: relative;
+  }
+  .chat-container {
+    /* remains unchanged */
+  }
+}
+
+/* Mobile adjustments: Sidebar now fixed on right with a backdrop */
+@media only screen and (max-width: 800px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 80%;
+    height: 100%;
+    z-index: 1000;
+    transition: transform 0.3s ease-in-out;
+    transform: translateX(100%);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  /* Backdrop for mobile sidebar */
+  .sidebar-backdrop {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 999;
+  }
+}
+
+/* Code block container with copy button */
+.code-block-container {
+  position: relative;
+}
+.copy-btn {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background: rgba(59, 63, 62, 0.8); /* theme color */
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 4px;
+  display: none;
+  height: 2rem;
+  padding: 0 1rem;
+}
+.code-block-container:hover .copy-btn {
+  display: block;
+}
+
+.regenerate-btn,
+.copy-reply-btn {
+  background: #343541;
+  margin: 2px;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 2rem;
+  padding: 0 1rem;
+}
+
+.chat-item {
+  position: relative;
+}
+
+.delete-chat-btn {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  /* Optional adjustments: size, padding, border, etc. */
+}
+
+.chat-item:hover .delete-chat-btn {
+  opacity: 1;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #3498db;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
     transform: rotate(0deg);
   }
-  to {
+  100% {
     transform: rotate(360deg);
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

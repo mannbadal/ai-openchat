@@ -56,16 +56,13 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
   const handleDeleteChat = async (chatId) => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
-
     const messagesQuery = await getDocs(
       collection(firestore, "users", uid, "chats", chatId, "messages")
     );
     for (const messageDoc of messagesQuery.docs) {
       await deleteDoc(messageDoc.ref);
     }
-
     await deleteDoc(doc(firestore, "users", uid, "chats", chatId));
-
     if (chatId === selectedChatId) {
       onSelect(null);
     }
