@@ -1,11 +1,10 @@
 name: Docker Image CI
 
-# Run on pushes to master and on a daily schedule (for security updates)
 on:
   push:
     branches: [master]
   schedule:
-    - cron: "0 0 * * *" # daily at midnight UTC
+    - cron: "0 0 * * *"
 
 jobs:
   build-and-push:
@@ -31,3 +30,12 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/openchat:latest
+          build-args: |
+            PORT=3000
+
+      # Add a test step to verify the port
+      - name: Test container
+        run: |
+          docker run -d -p 3000:3000 --name test-container ghcr.io/${{ github.repository_owner }}/openchat:latest
+          sleep 10
+          curl http://localhost:3000 || exit 1

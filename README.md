@@ -6,7 +6,6 @@ A modern chat application built with React, Firebase, and OpenAI API integration
 
 ![image](https://github.com/user-attachments/assets/1ac20c53-2cd5-49be-8bef-8dde2c3d66db)
 
-
 ## Features
 
 - Real-time chat interface
@@ -110,6 +109,56 @@ These security rules ensure that:
 
 ```bash
 npm run build
+```
+
+## Running with Docker
+
+Then run the following commands:
+
+```bash
+# Build Docker image with the app name "openchat"
+docker build -t openchat .
+
+# Run Docker container with environment variables passed inline
+docker run \
+  -e VITE_FIREBASE_API_KEY=your_api_key \
+  -e VITE_FIREBASE_AUTH_DOMAIN=your_api_domain \
+  -e VITE_FIREBASE_PROJECT_ID=your_project_id \
+  -e VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket \
+  -e VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id \
+  -e VITE_FIREBASE_APP_ID=your_app_id \
+  -e VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id \
+  -e VITE_OPENAI_API_KEY=your_openai_api_key \
+  -e VITE_OPENAI_BACKEND_URL=your_backend_url \
+  -p 3000:3000 openchat
+```
+
+You can also use Docker Compose. Create a file named docker-compose.yml in the project root with the following content:
+
+```yaml
+version: "3"
+services:
+  openchat:
+    image: openchat
+    build: .
+    environment:
+      - VITE_FIREBASE_API_KEY=your_api_key
+      - VITE_FIREBASE_AUTH_DOMAIN=your_api_domain
+      - VITE_FIREBASE_PROJECT_ID=your_project_id
+      - VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+      - VITE_FIREBASE_APP_ID=your_app_id
+      - VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+      - VITE_OPENAI_API_KEY=your_openai_api_key
+      - VITE_OPENAI_BACKEND_URL=your_backend_url
+    ports:
+      - "3000:3000"
+```
+
+Then, start the application with:
+
+```bash
+docker-compose up
 ```
 
 ## Project Structure
