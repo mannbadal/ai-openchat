@@ -84,6 +84,11 @@ const ChatApp = () => {
   }, []);
 
   const loadConversation = async (chatId) => {
+    if (chatId === null) {
+      setMessages([]);
+      setCurrentChatId(null);
+      return;
+    }
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
     const q = query(
@@ -291,6 +296,7 @@ const ChatApp = () => {
             <div className="sidebar-backdrop" onClick={handleBackdropClick} />
             <Sidebar
               onSelect={loadConversation}
+              selectedChatId={currentChatId} // added selectedChatId prop
               className={showSidebar ? "open" : ""}
             />
           </>
