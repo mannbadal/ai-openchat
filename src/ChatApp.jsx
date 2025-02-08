@@ -361,7 +361,18 @@ const ChatApp = () => {
         >
           <i className="fa fa-bars"></i>
         </button>
-        <h1>OpenChat 💬</h1>
+        <h1>
+          <span className="header-title">OpenChat</span> 💬
+        </h1>
+        {/* New placement for model selection dropdown */}
+        <select
+          value={selectedModel}
+          onChange={(e) => setSelectedModel(e.target.value)}
+        >
+          <option value="gpt-4o-mini">Default (gpt-4o-mini)</option>
+          <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+          <option value="gpt-4">gpt-4</option>
+        </select>
         <button onClick={startNewConversation} className="new-convo-btn">
           <i className="fa-regular fa-pen-to-square new-convo-icon"></i>
         </button>
@@ -388,14 +399,6 @@ const ChatApp = () => {
             <ChatMessage key={idx} message={message} />
           ))}
           <div ref={messageEndRef} />
-          <select
-            value={selectedModel}
-            onChange={(e) => setSelectedModel(e.target.value)}
-          >
-            <option value="gpt-4o-mini">Default (gpt-4o-mini)</option>
-            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
-            <option value="gpt-4">gpt-4</option>
-          </select>
           {!isStreaming &&
             messages.length > 0 &&
             messages[messages.length - 1].role === "assistant" && (
