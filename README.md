@@ -130,7 +130,7 @@ docker run \
   -e VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id \
   -e VITE_OPENAI_API_KEY=your_openai_api_key \
   -e VITE_OPENAI_BACKEND_URL=your_backend_url \
-  -p 3000:3000 ai-openchat
+  -p 3000:3000 ghcr.io/mannbadal/ai-openchat
 ```
 
 You can also use Docker Compose. Create a file named docker-compose.yml in the project root with the following content:
@@ -139,7 +139,7 @@ You can also use Docker Compose. Create a file named docker-compose.yml in the p
 version: "3"
 services:
   ai-openchat:
-    image: ai-openchat
+    image: ghcr.io/mannbadal/ai-openchat
     build: .
     environment:
       - VITE_FIREBASE_API_KEY=your_api_key
@@ -168,7 +168,11 @@ chat-app/
 ├── src/
 │   ├── components/
 │   │   └── Auth/
+│   │   └── ChatMessage.jsx
+│   │   └── CodeBlock.jsx
+│   │   └── Sidebar.jsx
 │   ├── App.jsx
+│   ├── App.css
 │   ├── ChatApp.jsx
 │   ├── firebase.js
 │   └── main.jsx
