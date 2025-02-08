@@ -6,7 +6,7 @@ permissions:
 
 on:
   push:
-    branches: [master, develop]
+    branches: [master]
   schedule:
     - cron: "0 0 * * *"
 
