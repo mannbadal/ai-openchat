@@ -19,7 +19,6 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
   useEffect(() => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
-    // Changed: use "updatedAt" for ordering
     const q = query(
       collection(firestore, "users", uid, "chats"),
       orderBy("updatedAt", "desc")
@@ -34,6 +33,22 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
     return () => unsubscribe();
   }, []);
 
+  const currentUser = auth.currentUser;
+  let providerIconClass = "";
+  if (
+    currentUser &&
+    currentUser.providerData &&
+    currentUser.providerData.length
+  ) {
+    const provider = currentUser.providerData.find(
+      (p) => p.providerId === "google.com" || p.providerId === "github.com"
+    );
+    if (provider) {
+      providerIconClass =
+        provider.providerId === "google.com" ? "fa-google" : "fa-github";
+    }
+  }
+
   const filteredChats = chats.filter((chat) =>
     chat.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -42,7 +57,6 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
 
-    // Delete all messages in the subcollection
     const messagesQuery = await getDocs(
       collection(firestore, "users", uid, "chats", chatId, "messages")
     );
@@ -50,10 +64,8 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
       await deleteDoc(messageDoc.ref);
     }
 
-    // Then delete the chat document
     await deleteDoc(doc(firestore, "users", uid, "chats", chatId));
 
-    // If the currently selected chat was deleted, display new conversation window.
     if (chatId === selectedChatId) {
       onSelect(null);
     }
@@ -62,16 +74,17 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
-      // ...any additional logic on logout...
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
 
   return (
-    <div className={`sidebar ${className || ""}`}>
+    <div
+      className={`sidebar ${className || ""}`}
+      style={{ display: "flex", flexDirection: "column", height: "100%" }}
+    >
       <h2>Past Conversations</h2>
-      {/* Styled search bar */}
       <input
         type="text"
         placeholder="Search conversations..."
@@ -85,31 +98,44 @@ const Sidebar = ({ onSelect, selectedChatId, className }) => {
           border: "1px solid #ccc",
         }}
       />
-      <ul>
-        {filteredChats.map((chat) => (
-          <li key={chat.id} className="chat-item">
-            <span onClick={() => onSelect && onSelect(chat.id)}>
-              {chat.title}
-            </span>
-            <button
-              className="delete-chat-btn"
-              onClick={() => handleDeleteChat(chat.id)}
-            >
-              <i className="fa fa-trash"></i>
-            </button>
-          </li>
-        ))}
-      </ul>
-      <button className="logout-btn" onClick={handleLogout}>
-        <i className="fa fa-sign-out-alt"></i> Logout
-      </button>
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <ul>
+          {filteredChats.map((chat) => (
+            <li key={chat.id} className="chat-item">
+              <span onClick={() => onSelect && onSelect(chat.id)}>
+                {chat.title}
+              </span>
+              <button
+                className="delete-chat-btn"
+                onClick={() => handleDeleteChat(chat.id)}
+              >
+                <i className="fa fa-trash"></i>
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      {currentUser && (
+        <div className="user-info" style={{ marginTop: "1rem" }}>
+          {providerIconClass && (
+            <i
+              className={`fa-brands provider-icon fa ${providerIconClass}`}
+              style={{ marginRight: "0.1rem" }}
+            ></i>
+          )}
+          <span>{currentUser.email}</span>
+          <button className="logout-btn" onClick={handleLogout}>
+            <i className="fa fa-sign-out-alt"></i>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 Sidebar.propTypes = {
   onSelect: PropTypes.func.isRequired,
-  selectedChatId: PropTypes.string, // new prop for tracking current chat
+  selectedChatId: PropTypes.string,
   className: PropTypes.string,
 };
 
