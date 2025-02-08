@@ -2,6 +2,11 @@
 
 A modern chat application built with React, Firebase, and OpenAI API integration.
 
+![image](https://github.com/user-attachments/assets/b21ff3fe-d202-42e2-ab79-c43aff8cf03d)
+
+![image](https://github.com/user-attachments/assets/1ac20c53-2cd5-49be-8bef-8dde2c3d66db)
+
+
 ## Features
 
 - Real-time chat interface
