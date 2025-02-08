@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-// src/ChatApp.jsx
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types"; // for prop validation
 import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -28,6 +26,7 @@ const openai = new OpenAI({
 });
 
 /* Helper component for code blocks with copy icon */
+/* eslint-disable react/prop-types */
 const CodeBlock = ({ inline, className, children, ...props }) => {
   const codeRef = useRef(null);
   const handleCopy = () => {
@@ -64,6 +63,7 @@ const CodeBlock = ({ inline, className, children, ...props }) => {
   );
 };
 
+/* eslint-disable react/prop-types */
 const ChatMessage = ({ message }) => {
   return (
     <div className={`message ${message.role}`}>
@@ -99,9 +99,14 @@ ChatMessage.propTypes = {
 };
 
 // Generate assistant reply using streaming via the new SDK
-const generateAssistantReply = async (conversation, onDelta, chatId = null) => {
+const generateAssistantReply = async (
+  conversation,
+  onDelta,
+  chatId = null,
+  model = "gpt-4o-mini"
+) => {
   const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+    model, // use provided model
     messages: conversation,
     stream: true,
   });
@@ -133,6 +138,7 @@ const ChatApp = () => {
   const [isStreaming, setIsStreaming] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [currentChatId, setCurrentChatId] = useState(null);
+  const [selectedModel, setSelectedModel] = useState("gpt-4o-mini"); // new state for model
   const messageEndRef = useRef(null);
   const initialLoad = useRef(true);
 
@@ -191,7 +197,7 @@ const ChatApp = () => {
   };
 
   // Store the conversation and generate a title using the new OpenAI SDK
-  const storeConversation = async (finalMessages) => {
+  const storeConversation = async (finalMessages, model = "gpt-4o-mini") => {
     if (!auth.currentUser) return;
     const uid = auth.currentUser.uid;
     const conversationText = finalMessages
@@ -202,7 +208,7 @@ const ChatApp = () => {
     const title = await (async () => {
       try {
         const response = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
+          model, // use provided model for title generation
           messages: [
             {
               role: "system",
@@ -267,7 +273,8 @@ const ChatApp = () => {
             return updated;
           });
         },
-        currentChatId
+        currentChatId,
+        selectedModel // pass selected model here
       );
       setIsStreaming(false);
       const finalMessages = [
@@ -276,7 +283,7 @@ const ChatApp = () => {
       ];
       const newMsgsToStore = finalMessages.slice(prevCount);
       if (currentChatId === null) {
-        const newChatId = await storeConversation(finalMessages);
+        const newChatId = await storeConversation(finalMessages, selectedModel); // pass model
         setCurrentChatId(newChatId);
       } else {
         for (const msg of newMsgsToStore) {
@@ -313,7 +320,8 @@ const ChatApp = () => {
             return updated;
           });
         },
-        currentChatId
+        currentChatId,
+        selectedModel // pass selected model here as well
       );
       setIsStreaming(false);
       const updatedMessages = [
@@ -380,6 +388,14 @@ const ChatApp = () => {
             <ChatMessage key={idx} message={message} />
           ))}
           <div ref={messageEndRef} />
+          <select
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+          >
+            <option value="gpt-4o-mini">Default (gpt-4o-mini)</option>
+            <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+            <option value="gpt-4">gpt-4</option>
+          </select>
           {!isStreaming &&
             messages.length > 0 &&
             messages[messages.length - 1].role === "assistant" && (
@@ -407,18 +423,20 @@ const ChatApp = () => {
         </div>
       </div>
       <form className="chat-input-area" onSubmit={handleSendMessage}>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage(e);
-            }
-          }}
-          placeholder="Type your message here..."
-          disabled={isStreaming}
-        />
+        <div className="textarea-container">
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(e);
+              }
+            }}
+            placeholder="Type your message here..."
+            disabled={isStreaming}
+          />
+        </div>
         <button
           className="send-button"
           type="submit"

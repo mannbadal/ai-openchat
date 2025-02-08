@@ -142,6 +142,7 @@ body {
   flex: 1; /* Make chat container grow to fill space */
   padding: 20px;
   overflow-y: auto;
+  position: relative; /* added to contain absolute children */
 }
 
 .message {
@@ -158,7 +159,7 @@ body {
 }
 
 .message-content {
-  max-width: 80%;
+  max-width: 100%;
   padding: 10px 15px;
   border-radius: 8px;
   background-color: #eaeaea;
@@ -196,8 +197,46 @@ body {
   display: flex;
   padding: 10px;
   border-top: 1px solid #ddd;
-  align-items: center;
+  align-items: flex-start; /* changed from center to allow height increase */
   flex-shrink: 0; /* prevent input area from shrinking */
+  position: relative; /* added for absolute positioning of dropdown */
+}
+
+/* Update textarea container to align its child (textarea) at the bottom */
+.textarea-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.textarea-container textarea {
+  width: 100%;
+  padding: 10px;
+  padding-bottom: 40px; /* extra bottom space to prevent overlap with dropdown */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  outline: none;
+  resize: vertical; /* allow vertical resizing */
+  overflow-y: auto; /* if text exceeds max height, show scrollbar */
+  max-height: calc(
+    1.5em * 10
+  ); /* display up to 10 lines (assuming ~1.5em per line) */
+}
+
+/* Position the model dropdown at bottom right within the chat-container */
+.chat-container select {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 1rem;
+  border-radius: 10px;
 }
 
 .chat-input-area textarea {
@@ -294,6 +333,10 @@ button:hover {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid #ddd;
+  }
+  .chat-container select {
+    top: 10px; /* position dropdown at top instead */
+    bottom: auto; /* remove bottom offset */
   }
 }
 
