@@ -116,8 +116,8 @@ npm run build
 Then run the following commands:
 
 ```bash
-# Build Docker image with the app name "openchat"
-docker build -t openchat .
+# Build Docker image with the app name "ai-openchat"
+docker build -t ai-openchat .
 
 # Run Docker container with environment variables passed inline
 docker run \
@@ -130,7 +130,7 @@ docker run \
   -e VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id \
   -e VITE_OPENAI_API_KEY=your_openai_api_key \
   -e VITE_OPENAI_BACKEND_URL=your_backend_url \
-  -p 3000:3000 openchat
+  -p 3000:3000 ai-openchat
 ```
 
 You can also use Docker Compose. Create a file named docker-compose.yml in the project root with the following content:
@@ -138,8 +138,8 @@ You can also use Docker Compose. Create a file named docker-compose.yml in the p
 ```yaml
 version: "3"
 services:
-  openchat:
-    image: openchat
+  ai-openchat:
+    image: ai-openchat
     build: .
     environment:
       - VITE_FIREBASE_API_KEY=your_api_key

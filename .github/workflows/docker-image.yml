@@ -29,13 +29,13 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/openchat:latest
+          tags: ghcr.io/${{ github.repository_owner }}/ai-openchat:latest
           build-args: |
             PORT=3000
 
       # Add a test step to verify the port
       - name: Test container
         run: |
-          docker run -d -p 3000:3000 --name test-container ghcr.io/${{ github.repository_owner }}/openchat:latest
+          docker run -d -p 3000:3000 --name test-container ghcr.io/${{ github.repository_owner }}/ai-openchat:latest
           sleep 10
           curl http://localhost:3000 || exit 1
