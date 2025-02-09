@@ -8,7 +8,7 @@ body {
   background-color: #f7f7f7;
 }
 
-.chat-app {
+.ai-openchat {
   display: flex;
   flex-direction: column;
   max-width: 1200px; /* changed from 800px to 1200px for wider display */
@@ -308,7 +308,7 @@ button:hover {
 
 /* Mobile-first adjustments */
 @media only screen and (max-width: 600px) {
-  .chat-app {
+  .ai-openchat {
     font-size: 0.9rem;
   }
   .chat-header {

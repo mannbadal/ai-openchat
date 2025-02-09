@@ -267,7 +267,7 @@ const ChatApp = () => {
   };
 
   return (
-    <div className="chat-app">
+    <div className="ai-openchat">
       <div className="chat-header">
         <button
           className="sidebar-toggle"

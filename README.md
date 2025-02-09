@@ -51,7 +51,7 @@ VITE_OPENAI_BACKEND_URL=your_backend_url (Only required if using other than Open
 
 ```bash
 git clone <repository-url>
-cd chat-app
+cd ai-openchat
 ```
 
 2. Install dependencies
@@ -164,7 +164,7 @@ docker-compose up
 ## Project Structure
 
 ```
-chat-app/
+ai-openchat/
 ├── src/
 │   ├── components/
 │   │   └── Auth/
