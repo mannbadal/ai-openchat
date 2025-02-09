@@ -136,11 +136,10 @@ docker run \
 You can also use Docker Compose. Create a file named docker-compose.yml in the project root with the following content:
 
 ```yaml
-version: "3"
 services:
   ai-openchat:
-    image: ai-openchat
     build: .
+    image: ai-openchat
     environment:
       - VITE_FIREBASE_API_KEY=your_api_key
       - VITE_FIREBASE_AUTH_DOMAIN=your_api_domain
