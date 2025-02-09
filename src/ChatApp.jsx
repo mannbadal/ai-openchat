@@ -14,8 +14,12 @@ import {
 } from "firebase/firestore";
 import OpenAI from "openai";
 
+const env = window.__ENV__ || {
+  VITE_OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY,
+};
+
 const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  apiKey: env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
