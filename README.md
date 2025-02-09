@@ -1,3 +1,11 @@
+[![Docker Build](https://github.com/mannbadal/ai-openchat/actions/workflows/docker-image.yml/badge.svg)](https://github.com/mannbadal/ai-openchat/actions/workflows/docker-image.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/mannbadal/ai-openchat)](https://github.com/users/mannbadal/packages/container/ai-openchat)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mannbadal/ai-openchat)](https://github.com/mannbadal/ai-openchat/releases)
+[![GitHub issues](https://img.shields.io/github/issues/mannbadal/ai-openchat)](https://github.com/mannbadal/ai-openchat/issues)
+[![GitHub stars](https://img.shields.io/github/stars/mannbadal/ai-openchat)](https://github.com/mannbadal/ai-openchat/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 # AI Chat Application
 
 A modern chat application built with React, Firebase, and OpenAI API integration.
