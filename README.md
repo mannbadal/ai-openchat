@@ -82,6 +82,9 @@ npm run dev
 
 1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com)
 2. Enable Authentication and Firestore in your project
+   a. ✅ Email
+   b. ✅ Google
+   c. ✅ Github
 3. Make sure that your domain name or local IP address is added to authorised domain in Firebase Authentication.
 4. Get your Firebase configuration from Project Settings > General > Your Apps
 5. Set up Firestore Security Rules in Firebase Console:
