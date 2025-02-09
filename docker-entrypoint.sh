@@ -1,6 +1,6 @@
 #!/bin/sh
 # Generate a runtime config file that is served by your web server
-cat <<EOF > /app/public/config.js
+cat <<EOF > /app/dist/config.js
 window.__ENV__ = {
   VITE_FIREBASE_API_KEY: "${VITE_FIREBASE_API_KEY}",
   VITE_FIREBASE_AUTH_DOMAIN: "${VITE_FIREBASE_AUTH_DOMAIN}",
