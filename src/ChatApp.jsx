@@ -15,11 +15,11 @@ import {
 import OpenAI from "openai";
 
 const env = window.__ENV__ || {
-  VITE_OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY,
+  OPENAI_API_KEY: import.meta.env.OPENAI_API_KEY,
 };
 
 const openai = new OpenAI({
-  apiKey: env.VITE_OPENAI_API_KEY,
+  apiKey: env.OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 
