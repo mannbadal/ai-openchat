@@ -4,7 +4,6 @@
 [![GitHub stars](https://img.shields.io/github/stars/mannbadal/ai-openchat)](https://github.com/mannbadal/ai-openchat/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
 # AI Chat Application
 
 A modern chat application built with React, Firebase, and OpenAI API integration.
@@ -33,9 +32,32 @@ A modern chat application built with React, Firebase, and OpenAI API integration
 - Markdown-to-JSX
 - Syntax Highlighter
 
-## Environment Variables
+## Setup Instructions
 
-Create a `.env` file in the root directory with the following variables:
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Git
+- Firebase account
+- OpenAI API key
+
+### 1. Clone & Install
+
+```bash
+# Clone the repository
+git clone https://github.com/mannbadal/ai-openchat.git
+
+# Navigate to project directory
+cd ai-openchat
+
+# Install dependencies
+npm install
+```
+
+### 2. Environment Setup
+
+Create a `.env` file in the root directory with the following configuration:
 
 ```properties
 # Firebase Configuration
@@ -49,45 +71,15 @@ VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
 # OpenAI Configuration
 VITE_OPENAI_API_KEY=your_openai_api_key
-VITE_OPENAI_BACKEND_URL=your_backend_url (Only required if using other than OpenAI)
+VITE_OPENAI_BACKEND_URL=your_backend_url
 ```
 
-## Setup & Installation
+### 3. Firebase Configuration
 
-1. Clone the repository
-
-```bash
-git clone <repository-url>
-cd ai-openchat
-```
-
-2. Install dependencies
-
-```bash
-npm install
-```
-
-3. Set up environment variables
-
-- Create a `.env` file
-- Add the required environment variables as shown above
-
-4. Start the development server
-
-```bash
-npm run dev
-```
-
-## Firebase Setup
-
-1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com)
-2. Enable Authentication and Firestore in your project
-   a. ✅ Email
-   b. ✅ Google
-   c. ✅ Github
-3. Make sure that your domain name or local IP address is added to authorised domain in Firebase Authentication.
-4. Get your Firebase configuration from Project Settings > General > Your Apps
-5. Set up Firestore Security Rules in Firebase Console:
+1. Create a new project at [Firebase Console](https://console.firebase.google.com)
+2. Enable **Authentication** and **Firestore** services
+3. Add your domain/localhost to authorized domains in Authentication settings
+4. Set up Firestore security rules:
 
 ```javascript
 rules_version = '2';
@@ -110,24 +102,21 @@ service cloud.firestore {
 }
 ```
 
-These security rules ensure that:
-
-- Users can only access their own data
-- Each user has their own isolated chat space
-- Messages are protected and private to the user
-
-## Building for Production
+### 4. Launch Application
 
 ```bash
+# Start development server
+npm run dev
+
+# Or build for production
 npm run build
 ```
 
-## Running with Docker
+### Docker Deployment (Optional)
 
-Then run the following commands:
+Run using Docker:
 
 ```bash
-# Run Docker container with environment variables passed inline
 docker run \
   -e VITE_FIREBASE_API_KEY=your_api_key \
   -e VITE_FIREBASE_AUTH_DOMAIN=your_api_domain \
@@ -141,7 +130,7 @@ docker run \
   -p 3000:3000 ghcr.io/mannbadal/ai-openchat:latest
 ```
 
-You can also use Docker Compose.
+Or use Docker Compose:
 
 ```yaml
 services:
