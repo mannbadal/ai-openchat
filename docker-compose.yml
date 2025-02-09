@@ -1,7 +1,6 @@
 services:
   ai-openchat:
-    build: .
-    image: ai-openchat
+    image: ghcr.io/mannbadal/ai-openchat:latest
     environment:
       - VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
       - VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
