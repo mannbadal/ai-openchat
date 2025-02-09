@@ -75,8 +75,9 @@ npm run dev
 
 1. Create a new Firebase project at [Firebase Console](https://console.firebase.google.com)
 2. Enable Authentication and Firestore in your project
-3. Get your Firebase configuration from Project Settings > General > Your Apps
-4. Set up Firestore Security Rules in Firebase Console:
+3. Make sure that your domain name or local IP address is added to authorised domain in Firebase Authentication.
+4. Get your Firebase configuration from Project Settings > General > Your Apps
+5. Set up Firestore Security Rules in Firebase Console:
 
 ```javascript
 rules_version = '2';
@@ -116,9 +117,6 @@ npm run build
 Then run the following commands:
 
 ```bash
-# Build Docker image with the app name "ai-openchat"
-docker build -t ai-openchat .
-
 # Run Docker container with environment variables passed inline
 docker run \
   -e VITE_FIREBASE_API_KEY=your_api_key \
@@ -130,34 +128,27 @@ docker run \
   -e VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id \
   -e VITE_OPENAI_API_KEY=your_openai_api_key \
   -e VITE_OPENAI_BACKEND_URL=your_backend_url \
-  -p 3000:3000 ghcr.io/mannbadal/ai-openchat
+  -p 3000:3000 ghcr.io/mannbadal/ai-openchat:latest
 ```
 
-You can also use Docker Compose. Create a file named docker-compose.yml in the project root with the following content:
+You can also use Docker Compose.
 
 ```yaml
 services:
   ai-openchat:
-    build: .
-    image: ai-openchat
+    image: ghcr.io/mannbadal/ai-openchat:latest
     environment:
-      - VITE_FIREBASE_API_KEY=your_api_key
-      - VITE_FIREBASE_AUTH_DOMAIN=your_api_domain
-      - VITE_FIREBASE_PROJECT_ID=your_project_id
-      - VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-      - VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-      - VITE_FIREBASE_APP_ID=your_app_id
-      - VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-      - VITE_OPENAI_API_KEY=your_openai_api_key
-      - VITE_OPENAI_BACKEND_URL=your_backend_url
+      - VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
+      - VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
+      - VITE_FIREBASE_PROJECT_ID=${VITE_FIREBASE_PROJECT_ID}
+      - VITE_FIREBASE_STORAGE_BUCKET=${VITE_FIREBASE_STORAGE_BUCKET}
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=${VITE_FIREBASE_MESSAGING_SENDER_ID}
+      - VITE_FIREBASE_APP_ID=${VITE_FIREBASE_APP_ID}
+      - VITE_FIREBASE_MEASUREMENT_ID=${VITE_FIREBASE_MEASUREMENT_ID}
+      - VITE_OPENAI_API_KEY=${VITE_OPENAI_API_KEY}
+      - VITE_OPENAI_BACKEND_URL=${VITE_OPENAI_BACKEND_URL}
     ports:
       - "3000:3000"
-```
-
-Then, start the application with:
-
-```bash
-docker-compose up
 ```
 
 ## Project Structure
