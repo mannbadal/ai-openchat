@@ -32,17 +32,17 @@ Create a `.env` file in the root directory with the following variables:
 
 ```properties
 # Firebase Configuration
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_auth_domain
-FIREBASE_PROJECT_ID=your_project_id
-FIREBASE_STORAGE_BUCKET=your_storage_bucket
-FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-FIREBASE_APP_ID=your_app_id
-FIREBASE_MEASUREMENT_ID=your_measurement_id
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 
 # OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key
-OPENAI_BACKEND_URL=your_backend_url (Only required if using other than OpenAI)
+VITE_OPENAI_API_KEY=your_openai_api_key
+VITE_OPENAI_BACKEND_URL=your_backend_url (Only required if using other than OpenAI)
 ```
 
 ## Setup & Installation
@@ -121,15 +121,15 @@ docker build -t ai-openchat .
 
 # Run Docker container with environment variables passed inline
 docker run \
-  -e FIREBASE_API_KEY=your_api_key \
-  -e FIREBASE_AUTH_DOMAIN=your_api_domain \
-  -e FIREBASE_PROJECT_ID=your_project_id \
-  -e FIREBASE_STORAGE_BUCKET=your_storage_bucket \
-  -e FIREBASE_MESSAGING_SENDER_ID=your_sender_id \
-  -e FIREBASE_APP_ID=your_app_id \
-  -e FIREBASE_MEASUREMENT_ID=your_measurement_id \
-  -e OPENAI_API_KEY=your_openai_api_key \
-  -e OPENAI_BACKEND_URL=your_backend_url \
+  -e VITE_FIREBASE_API_KEY=your_api_key \
+  -e VITE_FIREBASE_AUTH_DOMAIN=your_api_domain \
+  -e VITE_FIREBASE_PROJECT_ID=your_project_id \
+  -e VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket \
+  -e VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id \
+  -e VITE_FIREBASE_APP_ID=your_app_id \
+  -e VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id \
+  -e VITE_OPENAI_API_KEY=your_openai_api_key \
+  -e VITE_OPENAI_BACKEND_URL=your_backend_url \
   -p 3000:3000 ghcr.io/mannbadal/ai-openchat
 ```
 
@@ -139,18 +139,18 @@ You can also use Docker Compose. Create a file named docker-compose.yml in the p
 version: "3"
 services:
   ai-openchat:
-    image: ghcr.io/mannbadal/ai-openchat
+    image: ai-openchat
     build: .
     environment:
-      - FIREBASE_API_KEY=your_api_key
-      - FIREBASE_AUTH_DOMAIN=your_api_domain
-      - FIREBASE_PROJECT_ID=your_project_id
-      - FIREBASE_STORAGE_BUCKET=your_storage_bucket
-      - FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-      - FIREBASE_APP_ID=your_app_id
-      - FIREBASE_MEASUREMENT_ID=your_measurement_id
-      - OPENAI_API_KEY=your_openai_api_key
-      - OPENAI_BACKEND_URL=your_backend_url
+      - VITE_FIREBASE_API_KEY=your_api_key
+      - VITE_FIREBASE_AUTH_DOMAIN=your_api_domain
+      - VITE_FIREBASE_PROJECT_ID=your_project_id
+      - VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+      - VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+      - VITE_FIREBASE_APP_ID=your_app_id
+      - VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
+      - VITE_OPENAI_API_KEY=your_openai_api_key
+      - VITE_OPENAI_BACKEND_URL=your_backend_url
     ports:
       - "3000:3000"
 ```
