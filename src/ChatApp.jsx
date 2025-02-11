@@ -14,15 +14,8 @@ import {
 } from "firebase/firestore";
 import OpenAI from "openai";
 
-const getEnvVar = (key) => {
-  if (window.env && window.env[key]) {
-    return window.env[key];
-  }
-  return import.meta.env[key];
-};
-
 const openai = new OpenAI({
-  apiKey: getEnvVar("VITE_OPENAI_API_KEY"),
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
   dangerouslyAllowBrowser: true,
 });
 

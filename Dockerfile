@@ -9,6 +9,9 @@ RUN npm install
 # Copy source
 COPY . .
 
+# Build
+RUN npm run build
+
 EXPOSE 3000
 
 ARG VITE_FIREBASE_API_KEY
