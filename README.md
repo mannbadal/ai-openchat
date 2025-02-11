@@ -117,6 +117,10 @@ npm run build
 Run using Docker:
 
 ```bash
+# Build the Docker image
+docker build -t ai-openchat .
+
+# Run the container using the built image
 docker run \
   -e VITE_FIREBASE_API_KEY=your_api_key \
   -e VITE_FIREBASE_AUTH_DOMAIN=your_api_domain \
@@ -127,7 +131,7 @@ docker run \
   -e VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id \
   -e VITE_OPENAI_API_KEY=your_openai_api_key \
   -e VITE_OPENAI_BACKEND_URL=your_backend_url \
-  -p 3000:3000 ghcr.io/mannbadal/ai-openchat:latest
+  -p 3000:3000 ai-openchat
 ```
 
 Or use Docker Compose:
@@ -135,7 +139,8 @@ Or use Docker Compose:
 ```yaml
 services:
   ai-openchat:
-    image: ghcr.io/mannbadal/ai-openchat:latest
+    build: .
+    image: ai-openchat
     environment:
       - VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
       - VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
