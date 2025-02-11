@@ -9,22 +9,27 @@ RUN npm install
 # Copy source
 COPY . .
 
-# Build the app
-RUN npm run build
-
-# Create env.js that will be populated at runtime
-RUN echo "window.env = {};" > dist/env.js
-
-# Add script to populate env.js at container start
-RUN echo '#!/bin/sh' > /docker-entrypoint.sh && \
-    echo 'env | grep VITE_ | while read -r line; do' >> /docker-entrypoint.sh && \
-    echo '  key=$(echo "$line" | cut -d "=" -f1)' >> /docker-entrypoint.sh && \
-    echo '  value=$(echo "$line" | cut -d "=" -f2-)' >> /docker-entrypoint.sh && \
-    echo '  echo "window.env[\"$key\"] = \"$value\";" >> /app/dist/env.js' >> /docker-entrypoint.sh && \
-    echo 'done' >> /docker-entrypoint.sh && \
-    echo 'npm run preview' >> /docker-entrypoint.sh && \
-    chmod +x /docker-entrypoint.sh
-
 EXPOSE 3000
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ARG VITE_FIREBASE_API_KEY
+ARG VITE_FIREBASE_AUTH_DOMAIN
+ARG VITE_FIREBASE_PROJECT_ID
+ARG VITE_FIREBASE_STORAGE_BUCKET
+ARG VITE_FIREBASE_MESSAGING_SENDER_ID
+ARG VITE_FIREBASE_APP_ID
+ARG VITE_FIREBASE_MEASUREMENT_ID
+ARG VITE_OPENAI_API_KEY
+ARG VITE_OPENAI_BACKEND_URL
+
+ENV VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
+ENV VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
+ENV VITE_FIREBASE_PROJECT_ID=${VITE_FIREBASE_PROJECT_ID}
+ENV VITE_FIREBASE_STORAGE_BUCKET=${VITE_FIREBASE_STORAGE_BUCKET}
+ENV VITE_FIREBASE_MESSAGING_SENDER_ID=${VITE_FIREBASE_MESSAGING_SENDER_ID}
+ENV VITE_FIREBASE_APP_ID=${VITE_FIREBASE_APP_ID}
+ENV VITE_FIREBASE_MEASUREMENT_ID=${VITE_FIREBASE_MEASUREMENT_ID}
+ENV VITE_OPENAI_API_KEY=${VITE_OPENAI_API_KEY}
+ENV VITE_OPENAI_BACKEND_URL=${VITE_OPENAI_BACKEND_URL}
+ENV NODE_ENV=production
+
+CMD ["npm", "run", "preview"]
